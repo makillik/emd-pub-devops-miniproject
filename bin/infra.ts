@@ -97,14 +97,6 @@ ec2SecurityGroup.addIngressRule(
   'Allow All HTTP traffic from ALB'
 );
 
-// Allow Egress from the ALB to the Container
-// TODO: Fix circular dependency
-// albSecurityGroup.addEgressRule(
-//   ec2.Peer.securityGroupId(ec2SecurityGroup.securityGroupId),
-//   ec2.Port.tcp(80),
-//   `Allow HTTP to {service.toString()}`
-// );
-
 const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   assignPublicIp: true,
   cluster: cluster,
