@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image docker build -t "appdev:Dockerfile" .
-FROM python:3.4-alpine
+FROM python:3.12-alpine
 
 # Set the working directory to /app
 WORKDIR /app
