@@ -97,9 +97,9 @@ httpListener.addTargets('EMD-ECS', {
 });
 function generateBucketName(stack: cdk.Stack) : string {
   const environmentType = 'Development';
-  const region = stack.region.toUpperCase();
-  const timestamp = new Date().toISOString();
-  return `${environmentType}-${region}-${timestamp}`;
+  const region = stack.region;
+  const timestamp = new Date().valueOf();
+  return `${environmentType}-${region}-${timestamp}`.toLowerCase();
 }
 
 const logBucket = new s3.Bucket(stack, 'LogBucket', {
