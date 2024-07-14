@@ -49,8 +49,13 @@ const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 // Create ECS Task Definition Template
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(stack, `EMD-FargateTaskDefinition`, {
   family: `EMD-CDK-fargateTaskDefinition`,
-  cpu: 512,
-  memoryLimitMiB: 1024,
+  cpu: 256,
+  memoryLimitMiB: 512,
+  runtimePlatform: {
+    // This is set to ARM to match local development.
+    // We'd pick the best architecture based on our requirements
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
 });
 
 // Create AWS Fargate Container
