@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'EMD-FargateService15',
 // Create VPC
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
-  natGateways: 1
+  natGateways: 1 // We could set this to 2 to setup a nat gateway per AZ, which would be ideal for prod workloads
 });
 
 function generateBucketName(stack: cdk.Stack): string {
