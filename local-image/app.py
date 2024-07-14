@@ -12,4 +12,4 @@ def hello():
     return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), favorite_dessert=os.getenv("FAVORITE_DESSERT", "brussels sprout"))
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=56789)
+    app.run(host='0.0.0.0', port=80)
