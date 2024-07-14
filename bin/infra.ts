@@ -105,6 +105,7 @@ function generateBucketName(stack: cdk.Stack) : string {
 const logBucket = new s3.Bucket(stack, 'LogBucket', {
   bucketName: generateBucketName(stack),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  enforceSSL: true,
   autoDeleteObjects: true,
   versioned: true,
 });
