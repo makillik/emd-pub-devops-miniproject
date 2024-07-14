@@ -19,12 +19,29 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   natGateways: 0,
 });
 
+function generateBucketName(stack: cdk.Stack): string {
+  const environmentType = 'Development';
+  const region = stack.region;
+  const timestamp = new Date().valueOf();
+  return `${environmentType}-${region}-${timestamp}`.toLowerCase();
+}
+
+const logBucket = new s3.Bucket(stack, 'LogBucket', {
+  bucketName: generateBucketName(stack),
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  enforceSSL: true,
+  autoDeleteObjects: true,
+  versioned: true,
+});
+
 // Create Load Balancer
 const alb = new elbv2.ApplicationLoadBalancer(stack, 'EMD-ApplicationLoadBalancer', {
   vpc: vpc,
   internetFacing: true,
   ipAddressType: elbv2.IpAddressType.IPV4,
 });
+
+alb.logAccessLogs(logBucket)
 
 // Create Fargate Cluster
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -93,19 +110,5 @@ httpListener.addTargets('EMD-ECS', {
   targets: [service.loadBalancerTarget({
     containerName: 'EMD-FargateContainer'
   })],
-
 });
-function generateBucketName(stack: cdk.Stack) : string {
-  const environmentType = 'Development';
-  const region = stack.region;
-  const timestamp = new Date().valueOf();
-  return `${environmentType}-${region}-${timestamp}`.toLowerCase();
-}
 
-const logBucket = new s3.Bucket(stack, 'LogBucket', {
-  bucketName: generateBucketName(stack),
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  enforceSSL: true,
-  autoDeleteObjects: true,
-  versioned: true,
-});
