@@ -71,11 +71,11 @@ const fargateContainer = new ecs.ContainerDefinition(stack, `EMD-FargateContaine
   containerName: 'EMD-FargateContainer',
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '../local-image')),
   portMappings: [
-      {
-          containerPort: 80,
-          hostPort: 80,
-          protocol: ecs.Protocol.TCP
-      }
+    {
+      containerPort: 80,
+      hostPort: 80,
+      protocol: ecs.Protocol.TCP
+    }
   ],
   environment: {
     FAVORITE_DESSERT: 'Bread Pudding',
@@ -102,10 +102,10 @@ const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   taskDefinition: fargateTaskDefinition,
   platformVersion: ecs.FargatePlatformVersion.LATEST,
   vpcSubnets: {
-      subnets: [
+    subnets: [
       vpc.privateSubnets[0],
       vpc.privateSubnets[1],
-      ]
+    ]
   },
   securityGroups: [ec2SecurityGroup]
 });
