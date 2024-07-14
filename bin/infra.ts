@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'EMD-FargateService15',
 // Create VPC
 const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
-  natGateways: 0,
+  natGateways: 1
 });
 
 function generateBucketName(stack: cdk.Stack): string {
@@ -34,11 +34,18 @@ const logBucket = new s3.Bucket(stack, 'LogBucket', {
   versioned: true,
 });
 
+// Create Security Group firewall settings
+const albSecurityGroup = new ec2.SecurityGroup(stack, 'EMD-ALBSecurityGroup', {
+  vpc,
+  allowAllOutbound: false,
+});
+
 // Create Load Balancer
 const alb = new elbv2.ApplicationLoadBalancer(stack, 'EMD-ApplicationLoadBalancer', {
   vpc: vpc,
   internetFacing: true,
   ipAddressType: elbv2.IpAddressType.IPV4,
+  securityGroup: albSecurityGroup
 });
 
 alb.logAccessLogs(logBucket)
@@ -85,10 +92,18 @@ const ec2SecurityGroup = new ec2.SecurityGroup(stack, 'EMD-EC2SecurityGroup', {
 
 // Allow HTTP traffic from the load balancer
 ec2SecurityGroup.addIngressRule(
-  ec2.Peer.anyIpv4(),
+  ec2.Peer.securityGroupId(albSecurityGroup.securityGroupId),
   ec2.Port.tcp(80),
-  'Allow All HTTP traffic'
+  'Allow All HTTP traffic from ALB'
 );
+
+// Allow Egress from the ALB to the Container
+// TODO: Fix circular dependency
+// albSecurityGroup.addEgressRule(
+//   ec2.Peer.securityGroupId(ec2SecurityGroup.securityGroupId),
+//   ec2.Port.tcp(80),
+//   `Allow HTTP to {service.toString()}`
+// );
 
 const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   assignPublicIp: true,
@@ -97,8 +112,8 @@ const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   platformVersion: ecs.FargatePlatformVersion.LATEST,
   vpcSubnets: {
       subnets: [
-          vpc.publicSubnets[0],
-          vpc.publicSubnets[1],
+      vpc.privateSubnets[0],
+      vpc.privateSubnets[1],
       ]
   },
   securityGroups: [ec2SecurityGroup]
