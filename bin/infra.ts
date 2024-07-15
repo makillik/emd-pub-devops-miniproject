@@ -91,7 +91,7 @@ const ec2SecurityGroup = new ec2.SecurityGroup(stack, 'EMD-EC2SecurityGroup', {
 
 // TODO: We could limit outbound traffic to an ECR VPC Endpoint
 ec2SecurityGroup.addEgressRule(
-  ec2.Peer.securityGroupId(ec2SecurityGroup.securityGroupId),
+  ec2.Peer.ipv4('0.0.0.0/0'),
   ec2.Port.tcp(443),
   'Allow All HTTPS traffic outbound'
 );
