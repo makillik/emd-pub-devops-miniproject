@@ -86,8 +86,15 @@ const fargateContainer = new ecs.ContainerDefinition(stack, `EMD-FargateContaine
 // Create Security Group firewall settings
 const ec2SecurityGroup = new ec2.SecurityGroup(stack, 'EMD-EC2SecurityGroup', {
   vpc,
-  allowAllOutbound: false,
+  allowAllOutbound: false
 });
+
+// TODO: We could limit outbound traffic to an ECR VPC Endpoint
+ec2SecurityGroup.addEgressRule(
+  ec2.Peer.securityGroupId(ec2SecurityGroup.securityGroupId),
+  ec2.Port.tcp(443),
+  'Allow All HTTPS traffic outbound'
+);
 
 const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   assignPublicIp: true,
