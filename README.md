@@ -21,7 +21,9 @@ This repo uses will deploy resources to the default AWS profile configured on yo
 
 Run `cdk bootstrap` to bootstrap a new account/region.
 
-## Limitations
+## Limitations / Notes
+
+Updated to Python 3.12, and reviewed CPU/Memory requirements of the ECS task.
 
 This repo can deploy a single instance of this service per account/region. Ideally, we'd be able to namespace the resources accordingly and be able to deploy multiple instances per account/region.
 
