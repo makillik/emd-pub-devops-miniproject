@@ -45,7 +45,7 @@ const alb = new elbv2.ApplicationLoadBalancer(stack, 'EMD-ApplicationLoadBalance
   vpc: vpc,
   internetFacing: true,
   ipAddressType: elbv2.IpAddressType.IPV4,
-  securityGroup: albSecurityGroup
+  securityGroup: albSecurityGroup,
 });
 
 alb.logAccessLogs(logBucket)
@@ -81,7 +81,14 @@ const fargateContainer = new ecs.ContainerDefinition(stack, `EMD-FargateContaine
   environment: {
     FAVORITE_DESSERT: 'Bread Pudding',
   },
-  logging: new ecs.AwsLogDriver({ streamPrefix: "infra" })
+  logging: new ecs.AwsLogDriver({ streamPrefix: "infra" }),
+  healthCheck: {
+    command: ["CMD-SHELL", "ps | grep -v grep | grep python3 || exit 1"],
+    interval: cdk.Duration.minutes(1),
+    retries: 2,
+    startPeriod: cdk.Duration.seconds(30),
+    timeout: cdk.Duration.seconds(10),
+  },
 });
 
 // Create Security Group firewall settings
@@ -114,7 +121,8 @@ const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
 // Add HTTP Listener
 const httpListener = alb.addListener(`EMD-HTTPListner`, {
   port: 80,
-  protocol: ApplicationProtocol.HTTP
+  protocol: ApplicationProtocol.HTTP,
+
 });
 
 // Add listener target 
@@ -122,5 +130,5 @@ httpListener.addTargets('EMD-ECS', {
   protocol: ApplicationProtocol.HTTP,
   targets: [service.loadBalancerTarget({
     containerName: 'EMD-FargateContainer'
-  })],
+  })]
 });

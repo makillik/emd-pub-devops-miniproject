@@ -36,3 +36,5 @@ SSL is not used between the ALB and Container in this setup. Ideally, we'd still
 Outbound traffic from the containers is limited to port 443, which is minimally needed to pull down container images from ECR. We could use VPC endpoints to further restrict outgoing traffic.
 
 NACL's could also be used to limit network traffic between the subnets.
+
+No alarming has been defined for this service, but health checks have been added for the containers and exist by default for the target groups
