@@ -61,6 +61,7 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(stack, `EMD-FargateT
   runtimePlatform: {
     // This is set to ARM to match local development.
     // We'd pick the best architecture based on our requirements
+    // Intel users: ecs.CpuArchitecture.X86_64
     cpuArchitecture: ecs.CpuArchitecture.ARM64,
   },
 });
