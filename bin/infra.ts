@@ -86,15 +86,8 @@ const fargateContainer = new ecs.ContainerDefinition(stack, `EMD-FargateContaine
 // Create Security Group firewall settings
 const ec2SecurityGroup = new ec2.SecurityGroup(stack, 'EMD-EC2SecurityGroup', {
   vpc,
-  allowAllOutbound: true,
+  allowAllOutbound: false,
 });
-
-// Allow HTTP traffic from the load balancer
-ec2SecurityGroup.addIngressRule(
-  ec2.Peer.securityGroupId(albSecurityGroup.securityGroupId),
-  ec2.Port.tcp(80),
-  'Allow All HTTP traffic from ALB'
-);
 
 const service = new ecs.FargateService(stack, `EMD-ecs-service`, {
   assignPublicIp: true,
